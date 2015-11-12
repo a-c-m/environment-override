@@ -20,5 +20,22 @@
     "mocha": "~2.3.3",
     "istanbul": "~0.4.0",
     "sinon": "~1.17.2"
-  }
+  },
+  "directories": {
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/a-c-m/environment-override.git"
+  },
+  "keywords": [
+    "config",
+    "hapijs",
+    "environment"
+  ],
+  "author": "Alex McFadyen",
+  "bugs": {
+    "url": "https://github.com/a-c-m/environment-override/issues"
+  },
+  "homepage": "https://github.com/a-c-m/environment-override#readme"
 }

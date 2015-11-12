@@ -1,0 +1,21 @@
+{
+  "name": "environment-override",
+  "version": "0.0.1",
+  "description": "Takes a JSON object and checks the environment variables for overrides to its values. Great for HAPIjs manifests and other configuration.",
+  "main": "index.js",
+  "scripts": {
+    "test": "istanbul cover _mocha -- --no-timeouts -R dot test/tests/",
+    "check-coverage": "istanbul check-coverage --statements 100 --functions 90 --lines 100 --branches 100"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "diff": "~2.2.0",
+    "colors": "~1.1.2"
+  },
+  "devDependencies": {
+    "chai": "~3.4.1",
+    "mocha": "~2.3.3",
+    "istanbul": "~0.4.0",
+    "sinon": "~1.17.2"
+  }
+}

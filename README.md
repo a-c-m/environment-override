@@ -16,18 +16,18 @@ of the startup of the app.
 
 In code :
 
-    var override = require('enviroment-override');
+    var override = require('environment-override');
     var json = require('./some.json');
     override(json, 'PREFIX_');
 
 
 Or you can run it from the command line to see the variables you need to set :
 
-    node ./node_modules/environment-override/show prefix test.json
+    node ./node_modules/environment-override/bin/show test.json
 
 Use the following to see other options :
 
-    node ./node_modules/environment-override/show --help
+    node ./node_modules/environment-override/bin/show --help
 
 To override, simply set the environment variables you want to override, you can
 remove by setting the entry to be equal `OVERRIDE_REMOVE_DATA`.

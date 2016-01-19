@@ -73,12 +73,14 @@ if (output) {
   var _showDiff = function _showDiff(diff) {
     console.info("\nDiff");
     diff.forEach(function diffEach(part){
+      var prefix = part.added ? '++' :
+                  part.removed ? '--' : '';
       // green for additions, red for deletions
       // grey for common parts
       var color = part.added ? 'green' :
                   part.removed ? 'red' : 'grey';
 
-      process.stdout.write(part.value[color]);
+      process.stdout.write(prefix + part.value[color]);
     });
   };
 

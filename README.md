@@ -4,6 +4,9 @@ Environment Override
 [![view on npm](http://img.shields.io/npm/v/environment-override.svg?style=flat)](https://www.npmjs.org/package/environment-override)
 [![npm module downloads per month](http://img.shields.io/npm/dm/environment-override.svg?style=flat)](https://www.npmjs.org/package/environment-override)
 [![Dependency status](https://david-dm.org/a-c-m/environment-override.svg?style=flat)](https://david-dm.org/a-c-m/environment-override)
+[![Travis status](https://img.shields.io/travis/BrandedEntertainmentNetwork/environment-override.svg)](https://travis-ci.org/BrandedEntertainmentNetwork/environment-override)
+[![Code coverage](https://img.shields.io/codecov/c/github/BrandedEntertainmentNetwork/environment-override.svg)](https://codecov.io/gh/BrandedEntertainmentNetwork/environment-override)
+[![License](https://img.shields.io/github/license/BrandedEntertainmentNetwork/environment-override.svg)](https://opensource.org/licenses/MIT)
 
 > Takes a object and checks the environment variables for overrides to its values. Great for manifests and other configuration.
 

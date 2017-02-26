@@ -2,7 +2,7 @@
   "name": "environment-override",
   "version": "0.0.5",
   "description": "Takes a JSON object and checks the environment variables for overrides to its values. Great for HAPIjs manifests and other configuration.",
-  "main": "index.js",
+  "main": "./dist/environment-override.js",
   "scripts": {
     "prebuild": "rimraf dist && rimraf bin && mkdir dist && mkdir bin",
     "build": "babel --copy-files --out-file dist/environment-override.js src/environment-override.js && babel --out-file bin/show.js src/show.js",

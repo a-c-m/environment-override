@@ -7,10 +7,8 @@
  */
 
 import fs from 'fs';
-// import util from 'util';
-import jsdiff from 'diff';
+import { diffLines } from 'diff';
 import colors from 'colors';
-
 import override from '../dist/environment-override';
 import metadata from '../package.json';
 
@@ -30,13 +28,13 @@ const showDiff = (diffManifest) => {
       color = 'red';
     }
 
-    process.stdout.write(prefix + part.value[color]);
+    process.stdout.write(colors[color](`${prefix}${part.value}`));
   });
 
   console.info();
 };
 
-const showError = (error) => {
+const showErrorAndExit = (error) => {
   console.error(colors.red(`Error: ${error}`));
   console.error();
 };
@@ -48,9 +46,9 @@ if (process.argv[2] === 'help' || process.argv[2] === '--help' || process.argv.l
   console.info(metadata.description);
   console.info('This script will output the environment variable names you can use to override the values in the provided json file.');
   console.info('Script expects upto 3 arguments,');
-  console.info(' - argument 1: relative path to json file to check [required].');
-  console.info(' - argument 2: a prefix for the environment variable [optional].');
-  console.info(' - argument 3: output mode (all/diff/original/current) [optional].');
+  console.info('\t- argument 1: relative path to json file to check [required].');
+  console.info('\t- argument 2: a prefix for the environment variable [optional].');
+  console.info('\t- argument 3: output mode (all/diff/original/current) [optional].');
   console.info('e.g.');
   console.info('\tnode show.js test.json foo diff');
 
@@ -62,8 +60,7 @@ const prefix = (process.argv[3] ? process.argv[3] : '');
 const output = process.argv[4];
 
 if (!fs.existsSync(file)) {
-  showError('Expecting 1st argument to be a path to a json file.');
-  process.exit();
+  showErrorAndExit('Expecting 1st argument to be a path to a json file.');
 }
 
 console.info(`Loading file: ${file}`);
@@ -74,42 +71,58 @@ let json;
 try {
   json = JSON.parse(fileContents);
 } catch (e) {
-  showError('File is not in JSON format.');
-  process.exit();
+  showErrorAndExit('File is not in JSON format.');
 }
 
-console.info(`\nUsing the prefix "${prefix.toUpperCase()}" you have the following overrides:\n`);
+console.info();
+console.info(`Using the prefix "${prefix.toUpperCase()}" you have the following overrides:`);
+console.info();
 
 const overridenManifest = override(json, prefix, true);
 
 if (output) {
-  console.info(`\nOuput requested: ${output}`);
+  console.info();
+  console.info(`Ouput requested: ${output}`);
 
   const originalStringify = JSON.stringify(json, null, '  ');
   const overridenStringify = JSON.stringify(overridenManifest, null, '  ');
-  const diffManifest = jsdiff.diffLines(originalStringify, overridenStringify);
+  const diffManifest = diffLines(originalStringify, overridenStringify);
 
   switch (output) {
     case 'all':
-      console.info('\nOriginal\n', originalStringify);
-      console.info('\nOverridden\n', overridenStringify);
+      console.info();
+      console.info('Original');
+      console.info();
+      console.info(originalStringify);
+
+      console.info();
+      console.info('Overridden');
+      console.info();
+      console.info(overridenStringify);
+
       showDiff(diffManifest);
       break;
     case 'diff':
       showDiff(diffManifest);
       break;
     case 'original':
-      console.info('\nOriginal\n', originalStringify);
+      console.info();
+      console.info('Original');
+      console.info();
+      console.info(originalStringify);
       break;
     case 'current':
-      console.info('\nOverridden\n', overridenStringify);
+      console.info();
+      console.info('Overridden');
+      console.info();
+      console.info(overridenStringify);
       break;
     default:
       break;
   }
 }
 
-
-console.info("\n\n" +'Done');
+console.info();
+console.info('Done');
 
 process.exit();

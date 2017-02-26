@@ -4,6 +4,8 @@
  *   to its values. Great for manifests and other configuration.
  */
 
+const clone = obj => JSON.parse(JSON.stringify(obj));
+
 /**
  * Overrides values with environment variables.
  *
@@ -14,8 +16,8 @@
  * @param {bool} show
  *   If true, the code will output to console the overrides.
  */
-export default function override(values, prefix, show) {
-  const manifest = Object.assign({}, values);
+export default function override(values, prefix, show, recursive = false) {
+  const manifest = recursive ? values : clone(values);
 
   Object.keys(manifest).forEach((key) => {
     const value = manifest[key];
@@ -24,8 +26,14 @@ export default function override(values, prefix, show) {
     // Replace hyphens.
     keyPrefix = keyPrefix.replace(/-/g, '_');
 
+    // Replace local references.
+    keyPrefix = keyPrefix.replace(/\.\//g, '_');
+
     // Replace dots.
     keyPrefix = keyPrefix.replace(/\./g, '_');
+
+    // Replace double underscores.
+    keyPrefix = keyPrefix.replace(/__/g, '_');
 
     if (process.env[keyPrefix] !== undefined) {
       if (process.env[keyPrefix] === 'OVERRIDE_REMOVE_DATA') {
@@ -41,6 +49,7 @@ export default function override(values, prefix, show) {
         } catch (e) {
           // If we are not able ot parse the object, use it as a string.
           manifest[key] = process.env[keyPrefix];
+          console.log(manifest[key]);
         }
 
         if (show) {
@@ -53,7 +62,7 @@ export default function override(values, prefix, show) {
       }
 
       if (typeof value === 'object') {
-        override(value, `${keyPrefix}_`, show);
+        override(value, `${keyPrefix}_`, show, true);
       }
     }
   });

@@ -62,7 +62,6 @@ function override(values, prefix, show) {
         } catch (e) {
           // If we are not able ot parse the object, use it as a string.
           manifest[key] = process.env[keyPrefix];
-          console.log(manifest[key]);
         }
 
         if (show) {

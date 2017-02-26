@@ -15,7 +15,7 @@ before_script:
 script:
   - npm run test
 after_success:
-  - npm run check-coverage && npm run report-coverage
+  - npm run cover && npm run report-coverage
 branches:
   except:
     - /^v\d+\.\d+\.\d+$/

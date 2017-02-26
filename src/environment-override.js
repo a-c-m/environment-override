@@ -4,7 +4,6 @@
  *   to its values. Great for manifests and other configuration.
  */
 
-
 /**
  * Overrides values with environment variables.
  *
@@ -15,12 +14,12 @@
  * @param {bool} show
  *   If true, the code will output to console the overrides.
  */
-var override = function override(values, prefix, show) {
+export default function override(values, prefix, show) {
+  const manifest = Object.assign({}, values);
 
-  for (var key in values) {
-
-    var value = values[key];
-    var keyPrefix = (prefix + key).toUpperCase();
+  Object.keys(manifest).forEach((key) => {
+    const value = manifest[key];
+    let keyPrefix = (prefix + key).toUpperCase();
 
     // Replace hyphens.
     keyPrefix = keyPrefix.replace(/-/g, '_');
@@ -30,36 +29,34 @@ var override = function override(values, prefix, show) {
 
     if (process.env[keyPrefix] !== undefined) {
       if (process.env[keyPrefix] === 'OVERRIDE_REMOVE_DATA') {
-        delete values[key];
+        delete manifest[key];
+
         if (show) {
-          console.info('     removed ' + keyPrefix);
+          console.info(`     removed ${keyPrefix}`);
         }
-      }
-      else {
+      } else {
         try {
           // Try to parse the the environment variable and use it as object or array if possible.
-          values[key] = JSON.parse(process.env[keyPrefix]);
-        }
-        catch(e) {
+          manifest[key] = JSON.parse(process.env[keyPrefix]);
+        } catch (e) {
           // If we are not able ot parse the object, use it as a string.
-          values[key] = process.env[keyPrefix];
+          manifest[key] = process.env[keyPrefix];
         }
+
         if (show) {
-          console.info('  overridden ' + keyPrefix);
+          console.info(`  overridden ${keyPrefix}`);
         }
       }
-
-    }
-    else {
+    } else {
       if (show) {
-          console.info('             ' + keyPrefix);
+        console.info(`             ${keyPrefix}`);
       }
+
       if (typeof value === 'object') {
-        override(value, keyPrefix + '_', show);
+        override(value, `${keyPrefix}_`, show);
       }
     }
+  });
 
-  }
-};
-
-module.exports = override;
+  return manifest;
+}

@@ -1,4 +1,50 @@
 #!/usr/bin/env node
+'use strict';
+
+var _fs = require('fs');
+
+var _fs2 = _interopRequireDefault(_fs);
+
+var _diff = require('diff');
+
+var _diff2 = _interopRequireDefault(_diff);
+
+var _colors = require('colors');
+
+var _colors2 = _interopRequireDefault(_colors);
+
+var _environmentOverride = require('../dist/environment-override');
+
+var _environmentOverride2 = _interopRequireDefault(_environmentOverride);
+
+var _package = require('../package.json');
+
+var _package2 = _interopRequireDefault(_package);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+// import util from 'util';
+var showDiff = function showDiff(diffManifest) {
+  console.info();
+  console.info('Diff');
+
+  diffManifest.forEach(function (part) {
+    var prefix = '';
+    var color = 'grey';
+
+    if (part.added) {
+      prefix = '++';
+      color = 'green';
+    } else if (part.removed) {
+      prefix = '--';
+      color = 'red';
+    }
+
+    process.stdout.write(prefix + part.value[color]);
+  });
+
+  console.info();
+};
 
 /**
  * @fileOverview
@@ -6,24 +52,15 @@
  *   module from a json file.
  */
 
+var showError = function showError(error) {
+  console.error(_colors2.default.red('Error: ' + error));
+  console.error();
+};
 
-/* ADD MODULES */
+console.info('Environment Override Show v' + _package2.default.version + '.');
 
-var override = require('../');
-
-var fs = require('fs');
-var util = require('util');
-
-var jsdiff = require('diff');
-require('colors');
-
-
-console.info();
-
-/* BASIC COMMAND LINE TOOL VALIDAITON / HELP */
-
-if (process.argv[2] == 'help' || process.argv[2] == '--help' ||
-    process.argv.lenght > 4 || process.argv.lenght < 3) {
+if (process.argv[2] === 'help' || process.argv[2] === '--help' || process.argv.length > 5 || process.argv.length < 3) {
+  console.info(_package2.default.description);
   console.info('This script will output the environment variable names you can use to override the values in the provided json file.');
   console.info('Script expects upto 3 arguments,');
   console.info(' argument 1: relative path to  json file to check [required]');
@@ -31,78 +68,62 @@ if (process.argv[2] == 'help' || process.argv[2] == '--help' ||
   console.info(' argument 3: output mode (all/diff/original/current) [optional]');
   console.info('e.g.');
   console.info('\tnode show.js test.json foo diff');
+
   process.exit();
 }
 
 var file = process.argv[2];
-var prefix = (process.argv[3] ? process.argv[3] : '');
+var prefix = process.argv[3] ? process.argv[3] : '';
 var output = process.argv[4];
 
-if (!fs.existsSync(file)) {
-  console.info('Expecting 1st argument to be a path to a json file');
+if (!_fs2.default.existsSync(file)) {
+  showError('Expecting 1st argument to be a path to a json file.');
   process.exit();
 }
 
+console.info('Loading file: ' + file);
 
-/* SETUP / GET VALUES */
+var fileContents = _fs2.default.readFileSync(file);
+var json = void 0;
 
-console.info('Loading file : ' + process.cwd() + '/' + file);
+try {
+  json = JSON.parse(fileContents);
+} catch (e) {
+  showError('File is not in JSON format.');
+  process.exit();
+}
 
-var json = require(process.cwd() + '/' + file);
+console.info('\nUsing the prefix "' + prefix.toUpperCase() + '" you have the following overrides:\n');
 
-// hack to deep clone without needing another dependency.
-var original = JSON.parse(JSON.stringify(json));
-
-console.info("\n"+ 'Using the prefix "'+ prefix.toUpperCase() +'" you have the following overrides:'+"\n");
-
-
-/* DO IT */
-
-override(json, prefix, true);
-
-
-/* GIVE ADDIITONAL OUTPUT IF REQUESTED */
+var overridenManifest = (0, _environmentOverride2.default)(json, prefix, true);
 
 if (output) {
-  console.info("\nOuput requested : " + output);
+  console.info('\nOuput requested: ' + output);
 
-  var originalStringify = JSON.stringify(original, null, '  ');
-  var jsonStringify = JSON.stringify(json, null, '  ');
-  var diff = jsdiff.diffLines(originalStringify, jsonStringify);
-
-  var _showDiff = function _showDiff(diff) {
-    console.info("\nDiff");
-    diff.forEach(function diffEach(part){
-      var prefix = part.added ? '++' :
-                  part.removed ? '--' : '';
-      // green for additions, red for deletions
-      // grey for common parts
-      var color = part.added ? 'green' :
-                  part.removed ? 'red' : 'grey';
-
-      process.stdout.write(prefix + part.value[color]);
-    });
-  };
+  var originalStringify = JSON.stringify(json, null, '  ');
+  var overridenStringify = JSON.stringify(overridenManifest, null, '  ');
+  var diffManifest = _diff2.default.diffLines(originalStringify, overridenStringify);
 
   switch (output) {
     case 'all':
-      console.info("\nOriginal\n", originalStringify);
-      console.info("\nOverridden\n", jsonStringify);
-      _showDiff(diff);
+      console.info('\nOriginal\n', originalStringify);
+      console.info('\nOverridden\n', overridenStringify);
+      showDiff(diffManifest);
       break;
     case 'diff':
-      _showDiff(diff);
+      showDiff(diffManifest);
       break;
     case 'original':
-      console.info("\nOriginal\n", originalStringify);
+      console.info('\nOriginal\n', originalStringify);
       break;
     case 'current':
-      console.info("\nOverridden\n", jsonStringify);
+      console.info('\nOverridden\n', overridenStringify);
+      break;
+    default:
       break;
   }
 }
 
-
-console.info("\n\n" +'Done');
+console.info("\n\n" + 'Done');
 
 process.exit();

@@ -17,7 +17,7 @@ The code is currently synchronous as its expected to only be run once as part of
 
 ## In code
 
-    var override = require('environment-override');
+    var override = require('environment-override').override;
     var manifest = require('./manifest.json');
     override(manifest, 'PREFIX_');
 

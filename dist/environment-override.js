@@ -13,10 +13,6 @@ exports.default = override;
  *   to its values. Great for manifests and other configuration.
  */
 
-var clone = function clone(obj) {
-  return JSON.parse(JSON.stringify(obj));
-};
-
 /**
  * Overrides values with environment variables.
  *
@@ -28,9 +24,7 @@ var clone = function clone(obj) {
  *   If true, the code will output to console the overrides.
  */
 function override(values, prefix, show) {
-  var recursive = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : false;
-
-  var manifest = recursive ? values : clone(values);
+  var manifest = values;
 
   Object.keys(manifest).forEach(function (key) {
     var value = manifest[key];
@@ -74,10 +68,8 @@ function override(values, prefix, show) {
       }
 
       if ((typeof value === 'undefined' ? 'undefined' : _typeof(value)) === 'object') {
-        override(value, keyPrefix + '_', show, true);
+        override(value, keyPrefix + '_', show);
       }
     }
   });
-
-  return manifest;
 }

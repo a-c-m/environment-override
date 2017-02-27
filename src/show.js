@@ -30,6 +30,8 @@ const showDiff = (diffManifest) => {
   });
 };
 
+const clone = obj => JSON.parse(JSON.stringify(obj));
+
 cli.enable('version', 'status');
 cli.setApp(path.join(__dirname, '/../package.json'));
 
@@ -50,10 +52,10 @@ cli.main((args, options) => {
   }
 
   const fileContents = fs.readFileSync(file);
-  let json;
+  let manifest;
 
   try {
-    json = JSON.parse(fileContents);
+    manifest = JSON.parse(fileContents);
   } catch (e) {
     cli.error(`${file} is not in json format.`);
     process.exit();
@@ -65,14 +67,15 @@ cli.main((args, options) => {
     cli.info('You have the following overrides:');
   }
 
-  const overridenManifest = override(json, options.prefix, true);
+  const originalManifest = clone(manifest);
+  override(manifest, options.prefix, true);
 
   if (options.output) {
     const output = options.output.toLowerCase();
     cli.info(`Ouput requested: ${output}`);
 
-    const originalStringify = JSON.stringify(json, null, '  ');
-    const overridenStringify = JSON.stringify(overridenManifest, null, '  ');
+    const originalStringify = JSON.stringify(originalManifest, null, '  ');
+    const overridenStringify = JSON.stringify(manifest, null, '  ');
     const diffManifest = diffLines(originalStringify, overridenStringify);
 
     switch (output) {

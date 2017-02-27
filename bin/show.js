@@ -48,6 +48,10 @@ var showDiff = function showDiff(diffManifest) {
   });
 };
 
+var clone = function clone(obj) {
+  return JSON.parse(JSON.stringify(obj));
+};
+
 _cli2.default.enable('version', 'status');
 _cli2.default.setApp(_path2.default.join(__dirname, '/../package.json'));
 
@@ -68,10 +72,10 @@ _cli2.default.main(function (args, options) {
   }
 
   var fileContents = _fs2.default.readFileSync(file);
-  var json = void 0;
+  var manifest = void 0;
 
   try {
-    json = JSON.parse(fileContents);
+    manifest = JSON.parse(fileContents);
   } catch (e) {
     _cli2.default.error(file + ' is not in json format.');
     process.exit();
@@ -83,14 +87,15 @@ _cli2.default.main(function (args, options) {
     _cli2.default.info('You have the following overrides:');
   }
 
-  var overridenManifest = (0, _environmentOverride2.default)(json, options.prefix, true);
+  var originalManifest = clone(manifest);
+  (0, _environmentOverride2.default)(manifest, options.prefix, true);
 
   if (options.output) {
     var output = options.output.toLowerCase();
     _cli2.default.info('Ouput requested: ' + output);
 
-    var originalStringify = JSON.stringify(json, null, '  ');
-    var overridenStringify = JSON.stringify(overridenManifest, null, '  ');
+    var originalStringify = JSON.stringify(originalManifest, null, '  ');
+    var overridenStringify = JSON.stringify(manifest, null, '  ');
     var diffManifest = (0, _diff.diffLines)(originalStringify, overridenStringify);
 
     switch (output) {

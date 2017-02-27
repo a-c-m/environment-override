@@ -8,6 +8,8 @@ import { expect } from 'chai';
 import sinon from 'sinon';
 import override from './environment-override';
 
+const clone = obj => JSON.parse(JSON.stringify(obj));
+
 const stubs = {};
 
 describe('environment-override', () => {
@@ -38,9 +40,10 @@ describe('environment-override', () => {
           field2: 'value2',
         };
 
-        const overridenManifest = override(manifest, 'PREFIX_', show);
+        const originalManifest = clone(manifest);
+        override(manifest, 'PREFIX_', show);
 
-        expect(manifest).to.deep.equal(overridenManifest);
+        expect(manifest).to.deep.equal(originalManifest);
 
         const output = stubs.consoleInfo.args;
         const expectedOutput = (show !== true) ? [] : [
@@ -71,10 +74,12 @@ describe('environment-override', () => {
           field1: 'value1',
           field2: 'value2',
         };
-        const overridenManifest = override(manifest, 'PREFIX_', show);
 
-        manifest.field1 = process.env.PREFIX_FIELD1;
-        expect(manifest).to.deep.equal(overridenManifest);
+        const originalManifest = clone(manifest);
+        override(manifest, 'PREFIX_', show);
+
+        originalManifest.field1 = process.env.PREFIX_FIELD1;
+        expect(manifest).to.deep.equal(originalManifest);
 
         const output = stubs.consoleInfo.args;
         const expectedOutput = (show !== true) ? [] : [
@@ -95,9 +100,11 @@ describe('environment-override', () => {
             field4: 'value4',
           },
         };
-        const overridenManifest = override(manifest, 'PREFIX_', show);
-        manifest.field1 = process.env.PREFIX_FIELD1;
-        expect(manifest).to.deep.equal(overridenManifest);
+
+        const originalManifest = clone(manifest);
+        override(manifest, 'PREFIX_', show);
+        originalManifest.field1 = process.env.PREFIX_FIELD1;
+        expect(manifest).to.deep.equal(originalManifest);
 
         const output = stubs.consoleInfo.args;
         const expectedOutput = (show !== true) ? [] : [
@@ -134,10 +141,12 @@ describe('environment-override', () => {
             field4: 'value4',
           },
         };
-        const overridenManifest = override(manifest, 'PREFIX_', show);
-        manifest.field2 = JSON.parse(process.env.PREFIX_FIELD2);
 
-        expect(manifest).to.deep.equal(overridenManifest);
+        const originalManifest = clone(manifest);
+        override(manifest, 'PREFIX_', show);
+        originalManifest.field2 = JSON.parse(process.env.PREFIX_FIELD2);
+
+        expect(manifest).to.deep.equal(originalManifest);
 
         const output = stubs.consoleInfo.args;
         const expectedOutput = (show !== true) ? [] : [
@@ -168,11 +177,13 @@ describe('environment-override', () => {
           field1: 'value1',
           field2: 'value2',
         };
-        const overridenManifest = override(manifest, 'PREFIX_', show);
 
-        delete manifest.field1;
+        const originalManifest = clone(manifest);
+        override(manifest, 'PREFIX_', show);
 
-        expect(manifest).to.deep.equal(overridenManifest);
+        delete originalManifest.field1;
+
+        expect(manifest).to.deep.equal(originalManifest);
 
         const output = stubs.consoleInfo.args;
         const expectedOutput = (show !== true) ? [] : [

@@ -4,8 +4,6 @@
  *   to its values. Great for manifests and other configuration.
  */
 
-const clone = obj => JSON.parse(JSON.stringify(obj));
-
 /**
  * Overrides values with environment variables.
  *
@@ -16,8 +14,8 @@ const clone = obj => JSON.parse(JSON.stringify(obj));
  * @param {bool} show
  *   If true, the code will output to console the overrides.
  */
-export default function override(values, prefix, show, recursive = false) {
-  const manifest = recursive ? values : clone(values);
+export default function override(values, prefix, show) {
+  const manifest = values;
 
   Object.keys(manifest).forEach((key) => {
     const value = manifest[key];
@@ -61,10 +59,8 @@ export default function override(values, prefix, show, recursive = false) {
       }
 
       if (typeof value === 'object') {
-        override(value, `${keyPrefix}_`, show, true);
+        override(value, `${keyPrefix}_`, show);
       }
     }
   });
-
-  return manifest;
 }

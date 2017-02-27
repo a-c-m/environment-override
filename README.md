@@ -68,7 +68,8 @@ Assuming we have the following `test.json` file:
 
 We can see all the variables by running `show.js`:
 
-	./bin/show.js test.json -p APP_                              INFO: Using the prefix "APP_" you have the following overrides:
+	./bin/show.js test.json -p APP_                              
+	INFO: Using the prefix "APP_" you have the following overrides:
 			APP_FIELD1
 	    APP_FIELD2
 	    APP_FIELD2_S1
@@ -83,7 +84,8 @@ We can override them by setting various values:
 
 Running `show.js` again will inform us of which variables were overridden:
 
-	./bin/show.js test.json -p APP_                                      INFO: Using the prefix "APP_" you have the following overrides:
+	./bin/show.js test.json -p APP_                                      
+	INFO: Using the prefix "APP_" you have the following overrides:
 	  overridden APP_FIELD1
 	  overridden APP_FIELD2
 	     removed APP_FIELD3	     

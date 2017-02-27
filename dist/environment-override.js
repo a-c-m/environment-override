@@ -6,7 +6,7 @@ Object.defineProperty(exports, "__esModule", {
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
-exports.default = override;
+exports.override = override;
 /**
  * @fileOverview
  *   Takes a object and checks the environment variables for overrides
@@ -73,3 +73,5 @@ function override(values, prefix, show) {
     }
   });
 }
+
+exports.default = override;

@@ -1,4 +1,29 @@
 #!/usr/bin/env node
+'use strict';
+
+var _fs = require('fs');
+
+var _fs2 = _interopRequireDefault(_fs);
+
+var _path = require('path');
+
+var _path2 = _interopRequireDefault(_path);
+
+var _cli = require('cli');
+
+var _cli2 = _interopRequireDefault(_cli);
+
+var _diff = require('diff');
+
+var _colors = require('colors');
+
+var _colors2 = _interopRequireDefault(_colors);
+
+var _environmentOverride = require('../dist/environment-override');
+
+var _environmentOverride2 = _interopRequireDefault(_environmentOverride);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 /**
  * @fileOverview
@@ -6,103 +31,97 @@
  *   module from a json file.
  */
 
+var showDiff = function showDiff(diffManifest) {
+  diffManifest.forEach(function (part) {
+    var prefix = '';
+    var color = 'grey';
 
-/* ADD MODULES */
+    if (part.added) {
+      prefix = '++';
+      color = 'green';
+    } else if (part.removed) {
+      prefix = '--';
+      color = 'red';
+    }
 
-var override = require('../');
+    process.stdout.write(_colors2.default[color]('' + prefix + part.value));
+  });
+};
 
-var fs = require('fs');
-var util = require('util');
+var clone = function clone(obj) {
+  return JSON.parse(JSON.stringify(obj));
+};
 
-var jsdiff = require('diff');
-require('colors');
+_cli2.default.enable('version', 'status');
+_cli2.default.setApp(_path2.default.join(__dirname, '/../package.json'));
 
+_cli2.default.parse({
+  prefix: ['p', 'A prefix for the environment variable', 'string', ''],
+  output: ['o', 'The output mode: all/diff/original/current', 'string', '']
+});
 
-console.info();
-
-/* BASIC COMMAND LINE TOOL VALIDAITON / HELP */
-
-if (process.argv[2] == 'help' || process.argv[2] == '--help' ||
-    process.argv.lenght > 4 || process.argv.lenght < 3) {
-  console.info('This script will output the environment variable names you can use to override the values in the provided json file.');
-  console.info('Script expects upto 3 arguments,');
-  console.info(' argument 1: relative path to  json file to check [required]');
-  console.info(' argument 2: a prefix for the environment variable [optional]');
-  console.info(' argument 3: output mode (all/diff/original/current) [optional]');
-  console.info('e.g.');
-  console.info('\tnode show.js test.json foo diff');
-  process.exit();
-}
-
-var file = process.argv[2];
-var prefix = (process.argv[3] ? process.argv[3] : '');
-var output = process.argv[4];
-
-if (!fs.existsSync(file)) {
-  console.info('Expecting 1st argument to be a path to a json file');
-  process.exit();
-}
-
-
-/* SETUP / GET VALUES */
-
-console.info('Loading file : ' + process.cwd() + '/' + file);
-
-var json = require(process.cwd() + '/' + file);
-
-// hack to deep clone without needing another dependency.
-var original = JSON.parse(JSON.stringify(json));
-
-console.info("\n"+ 'Using the prefix "'+ prefix.toUpperCase() +'" you have the following overrides:'+"\n");
-
-
-/* DO IT */
-
-override(json, prefix, true);
-
-
-/* GIVE ADDIITONAL OUTPUT IF REQUESTED */
-
-if (output) {
-  console.info("\nOuput requested : " + output);
-
-  var originalStringify = JSON.stringify(original, null, '  ');
-  var jsonStringify = JSON.stringify(json, null, '  ');
-  var diff = jsdiff.diffLines(originalStringify, jsonStringify);
-
-  var _showDiff = function _showDiff(diff) {
-    console.info("\nDiff");
-    diff.forEach(function diffEach(part){
-      var prefix = part.added ? '++' :
-                  part.removed ? '--' : '';
-      // green for additions, red for deletions
-      // grey for common parts
-      var color = part.added ? 'green' :
-                  part.removed ? 'red' : 'grey';
-
-      process.stdout.write(prefix + part.value[color]);
-    });
-  };
-
-  switch (output) {
-    case 'all':
-      console.info("\nOriginal\n", originalStringify);
-      console.info("\nOverridden\n", jsonStringify);
-      _showDiff(diff);
-      break;
-    case 'diff':
-      _showDiff(diff);
-      break;
-    case 'original':
-      console.info("\nOriginal\n", originalStringify);
-      break;
-    case 'current':
-      console.info("\nOverridden\n", jsonStringify);
-      break;
+_cli2.default.main(function (args, options) {
+  if (!args.length) {
+    _cli2.default.getUsage();
   }
-}
 
+  var file = args[0];
+  if (!_fs2.default.existsSync(file)) {
+    _cli2.default.error(file + ' is not a path to a json file.');
+    process.exit();
+  }
 
-console.info("\n\n" +'Done');
+  var fileContents = _fs2.default.readFileSync(file);
+  var manifest = void 0;
 
-process.exit();
+  try {
+    manifest = JSON.parse(fileContents);
+  } catch (e) {
+    _cli2.default.error(file + ' is not in json format.');
+    process.exit();
+  }
+
+  if (options.prefix) {
+    _cli2.default.info('Using the prefix "' + options.prefix.toUpperCase() + '" you have the following overrides:');
+  } else {
+    _cli2.default.info('You have the following overrides:');
+  }
+
+  var originalManifest = clone(manifest);
+  (0, _environmentOverride2.default)(manifest, options.prefix, true);
+
+  if (options.output) {
+    var output = options.output.toLowerCase();
+    _cli2.default.info('Ouput requested: ' + output);
+
+    var originalStringify = JSON.stringify(originalManifest, null, '  ');
+    var overridenStringify = JSON.stringify(manifest, null, '  ');
+    var diffManifest = (0, _diff.diffLines)(originalStringify, overridenStringify);
+
+    switch (output) {
+      case 'all':
+        _cli2.default.info('Original');
+        _cli2.default.info(originalStringify);
+
+        _cli2.default.info('Overridden');
+        _cli2.default.info(overridenStringify);
+
+        showDiff(diffManifest);
+        break;
+      case 'diff':
+        _cli2.default.info('Diff');
+        showDiff(diffManifest);
+        break;
+      case 'original':
+        _cli2.default.info('Original');
+        _cli2.default.info(originalStringify);
+        break;
+      case 'current':
+        _cli2.default.info('Overridden');
+        _cli2.default.info(overridenStringify);
+        break;
+      default:
+        break;
+    }
+  }
+});

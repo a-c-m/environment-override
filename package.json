@@ -1,25 +1,44 @@
 {
   "name": "environment-override",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "Takes a JSON object and checks the environment variables for overrides to its values. Great for HAPIjs manifests and other configuration.",
-  "main": "index.js",
+  "main": "./dist/environment-override.js",
   "scripts": {
-    "test": "istanbul cover _mocha -- --no-timeouts -R dot test/tests/",
-    "check-coverage": "istanbul check-coverage --statements 100 --functions 90 --lines 100 --branches 100"
+    "prebuild": "rimraf dist && rimraf bin && mkdir dist && mkdir bin",
+    "build": "babel --copy-files --out-file dist/environment-override.js src/environment-override.js && babel --out-file bin/show.js src/show.js",
+    "postbuild": "chmod +x bin/show.js",
+    "eslint": "eslint src",
+    "test": "mocha src/*.test.js --compilers js:babel-core/register",
+    "test:watch": "npm t -- -w",
+    "cover": "nyc --reporter=lcov --reporter=text --require babel-core/register npm t",
+    "check-coverage": "nyc check-coverage --statements 100 --branches 100 --functions 100 --lines 100",
+    "report-coverage": "cat ./coverage/lcov.info | codecov"
   },
   "bin": {
     "environment-override-show": "./bin/show.js"
   },
   "license": "MIT",
   "dependencies": {
-    "diff": "~2.2.0",
-    "colors": "~1.1.2"
+    "cli": "^1.0.1",
+    "colors": "^1.1.2",
+    "diff": "^3.2.0"
   },
   "devDependencies": {
-    "chai": "~3.4.1",
-    "mocha": "~2.3.3",
-    "istanbul": "~0.4.0",
-    "sinon": "~1.17.2"
+    "babel-cli": "^6.23.0",
+    "babel-core": "^6.23.1",
+    "babel-polyfill": "^6.23.0",
+    "babel-preset-env": "^1.1.10",
+    "chai": "^3.5.0",
+    "codecov": "^1.0.1",
+    "eslint": "^3.16.1",
+    "eslint-config-airbnb": "^14.1.0",
+    "eslint-plugin-import": "^2.2.0",
+    "eslint-plugin-jsx-a11y": "^4.0.0",
+    "eslint-plugin-react": "^6.10.0",
+    "mocha": "^3.2.0",
+    "nyc": "^10.1.2",
+    "rimraf": "^2.6.1",
+    "sinon": "^1.17.7"
   },
   "directories": {
     "test": "test"

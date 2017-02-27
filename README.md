@@ -4,8 +4,8 @@ Environment Override
 [![view on npm](http://img.shields.io/npm/v/environment-override.svg?style=flat)](https://www.npmjs.org/package/environment-override)
 [![npm module downloads per month](http://img.shields.io/npm/dm/environment-override.svg?style=flat)](https://www.npmjs.org/package/environment-override)
 [![Dependency status](https://david-dm.org/a-c-m/environment-override.svg?style=flat)](https://david-dm.org/a-c-m/environment-override)
-[![Travis status](https://img.shields.io/travis/BrandedEntertainmentNetwork/environment-override.svg)](https://travis-ci.org/BrandedEntertainmentNetwork/environment-override)
-[![Code coverage](https://img.shields.io/codecov/c/github/BrandedEntertainmentNetwork/environment-override.svg)](https://codecov.io/gh/BrandedEntertainmentNetwork/environment-override)
+[![Travis status](https://img.shields.io/travis/a-c-m/environment-override.svg)](https://travis-ci.org/a-c-m/environment-override)
+[![Code coverage](https://img.shields.io/codecov/c/github/a-c-m/environment-override.svg)](https://codecov.io/gh/a-c-m/environment-override)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 
 > Takes an object holding configuration and checks the environment variables for overrides to its values. Great for hapi manifests and other types of configuration.

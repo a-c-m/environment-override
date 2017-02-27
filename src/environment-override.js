@@ -14,7 +14,7 @@
  * @param {bool} show
  *   If true, the code will output to console the overrides.
  */
-export default function override(values, prefix, show) {
+export function override(values, prefix, show) {
   const manifest = values;
 
   Object.keys(manifest).forEach((key) => {
@@ -64,3 +64,5 @@ export default function override(values, prefix, show) {
     }
   });
 }
+
+export default override;

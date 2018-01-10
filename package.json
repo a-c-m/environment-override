@@ -1,6 +1,6 @@
 {
   "name": "environment-override",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Takes a JSON object and checks the environment variables for overrides to its values. Great for HAPIjs manifests and other configuration.",
   "main": "./dist/environment-override.js",
   "scripts": {

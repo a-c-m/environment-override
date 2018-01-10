@@ -42,6 +42,9 @@ function override(values, prefix, show) {
     // Replace double underscores.
     keyPrefix = keyPrefix.replace(/__/g, '_');
 
+    // Replace slashes.
+    keyPrefix = keyPrefix.replace(/\//g, '_');
+
     if (process.env[keyPrefix] !== undefined) {
       if (process.env[keyPrefix] === 'OVERRIDE_REMOVE_DATA') {
         delete manifest[key];
